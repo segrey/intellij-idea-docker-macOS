@@ -4,7 +4,6 @@ ARG INSTALLER_FILENAME
 
 # https://youtrack.jetbrains.com/articles/JBR-A-2/JetBrains-Runtime-on-musl-based-Systems
 RUN apk update && apk add --no-cache \
-    openjdk25-jdk \
     gcompat \
     libstdc++ \
     wget \
@@ -12,10 +11,6 @@ RUN apk update && apk add --no-cache \
     less \
     fontconfig \
     font-liberation \
-    # JetBrains Mono and Inter are the IDE's default editor/terminal and UI fonts.
-    # They ship inside JBR, which this image does not use.
-    font-jetbrains-mono \
-    font-inter \
     libxext \
     libxrender \
     libxtst \
@@ -33,6 +28,17 @@ RUN if [ ! -f "$INSTALLER_FILENAME" ]; then \
 RUN tar -xzvf $INSTALLER_FILENAME -C /opt/intellij-idea --strip-components=1
 RUN rm $INSTALLER_FILENAME
 
+# The IDE's bundled JBR is linked against glibc and does not load on musl, so the IDE
+# runs on the musl build of the same JBR version, published by JetBrains.
+RUN JBR_VERSION=$(sed -n 's/^JAVA_VERSION="\(.*\)"/\1/p' /opt/intellij-idea/jbr/release) && \
+    JBR_BUILD=$(sed -n 's/^JAVA_RUNTIME_VERSION=".*-\(b[0-9.]*\)"/\1/p' /opt/intellij-idea/jbr/release) && \
+    case "$(uname -m)" in aarch64) JBR_ARCH=aarch64 ;; x86_64) JBR_ARCH=x64 ;; *) exit 1 ;; esac && \
+    JBR_FILENAME="jbr-${JBR_VERSION}-linux-musl-${JBR_ARCH}-${JBR_BUILD}.tar.gz" && \
+    wget -O "/tmp/$JBR_FILENAME" "https://cache-redirector.jetbrains.com/intellij-jbr/$JBR_FILENAME" && \
+    mkdir -p /opt/jbr && \
+    tar -xzf "/tmp/$JBR_FILENAME" -C /opt/jbr --strip-components=1 && \
+    rm "/tmp/$JBR_FILENAME"
+
 RUN adduser -D -h /home/my_user -s /bin/sh my_user
 USER my_user
 
@@ -40,5 +46,5 @@ WORKDIR /home/my_user
 
 RUN mkdir -p /home/my_user/projects/my-project
 
-ENV IDEA_JDK /usr/lib/jvm/java-25-openjdk
+ENV IDEA_JDK=/opt/jbr
 CMD ["/opt/intellij-idea/bin/idea", "/home/my_user/projects/my-project"]
