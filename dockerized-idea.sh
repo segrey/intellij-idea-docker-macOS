@@ -44,7 +44,7 @@ mkdir -p "$DATA_DIR/system" \
          "$DATA_DIR/logs" \
          "$DATA_DIR/plugins"
 
-docker run -it \
+docker run -it --rm \
   -e DISPLAY=host.docker.internal:0 \
   -e IDEA_PROPERTIES="$CONTAINER_HOME/idea.properties" \
   -e IDEA_VM_OPTIONS="$CONTAINER_HOME/idea.vmoptions" \
