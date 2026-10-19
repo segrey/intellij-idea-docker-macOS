@@ -1,4 +1,4 @@
-Docker container to run IntelliJ IDEA Community Edition on macOS.
+Docker container to run IntelliJ IDEA on macOS.
 
 Prerequisites
 ===
@@ -12,11 +12,16 @@ Usage
 Run IntelliJ IDEA Community in Docker:
 ```
 ./dockerized-idea.sh ubuntu 2026.2.3
-./dockerized-idea.sh ubuntu 253.15192 # place manually ./builds/ideaIC-253.15192-aarch64.tar.gz
+./dockerized-idea.sh ubuntu 263.7031.23 # place manually ./builds/idea-263.7031.23-aarch64.tar.gz
 
-./dockerized-idea.sh alpine 2025.1.4.1
-./dockerized-idea.sh alpine 2025.2
-./dockerized-idea.sh alpine 253.15192 # place manually ./builds/ideaIC-253.15192-aarch64.tar.gz
+./dockerized-idea.sh alpine 2026.2.3
+./dockerized-idea.sh alpine 271.994 # place manually ./builds/idea-271.994-aarch64.tar.gz
+
+./dockerized-idea.sh rhel8 263.7031.23
+
+# Amazon Linux 2 has glibc 2.26. The IDE does not start there: the bundled JBR needs glibc 2.28
+# (checked with 263.7031.23). Kept to reproduce the "Cannot start the runtime" error.
+./dockerized-idea.sh amazonlinux2 2026.2.3
 ```
 
 XQuartz configuration
@@ -24,8 +29,4 @@ XQuartz configuration
 1. Install [XQuartz](https://www.xquartz.org/).
 2. Open XQuartz, go to "Settings | Security" and enable `Allow connections from network clients` there.
    It might require restarting the system.
-3. If you're on macOS with Apple Silicon (M1), then you probably need to apply a workaround for https://github.com/XQuartz/XQuartz/issues/31 ([JBR-6133](https://youtrack.jetbrains.com/issue/JBR-6133/PERPIXELTRANSLUCENT-translucency-is-not-supported)). To fix the black background, run the following command in Terminal:
-```
-defaults write org.xquartz.X11 enable_render_extension -int 0
-```
-4. Run XQuartz with `./start-xquartz.sh`
+3. Run XQuartz with `./start-xquartz.sh`

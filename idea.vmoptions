@@ -1,0 +1,3 @@
+# Loaded through IDEA_VM_OPTIONS by dockerized-idea.sh. The launcher then ignores the
+# bundled bin/idea64.vmoptions, so this file starts as a copy of it.
+-Didea.is.internal=true

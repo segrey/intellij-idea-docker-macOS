@@ -1,10 +1,10 @@
-FROM alpine:3.22
+FROM alpine:3.24.2
 
 ARG INSTALLER_FILENAME
 
 # https://youtrack.jetbrains.com/articles/JBR-A-2/JetBrains-Runtime-on-musl-based-Systems
 RUN apk update && apk add --no-cache \
-    openjdk21-jdk \
+    openjdk25-jdk \
     gcompat \
     libstdc++ \
     wget \
@@ -12,6 +12,10 @@ RUN apk update && apk add --no-cache \
     less \
     fontconfig \
     font-liberation \
+    # JetBrains Mono and Inter are the IDE's default editor/terminal and UI fonts.
+    # They ship inside JBR, which this image does not use.
+    font-jetbrains-mono \
+    font-inter \
     libxext \
     libxrender \
     libxtst \
@@ -36,5 +40,5 @@ WORKDIR /home/my_user
 
 RUN mkdir -p /home/my_user/projects/my-project
 
-ENV IDEA_JDK /usr/lib/jvm/java-21-openjdk
-CMD ["/opt/intellij-idea/bin/idea.sh", "/home/my_user/projects/my-project"]
+ENV IDEA_JDK /usr/lib/jvm/java-25-openjdk
+CMD ["/opt/intellij-idea/bin/idea", "/home/my_user/projects/my-project"]
