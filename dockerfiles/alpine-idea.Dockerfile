@@ -4,6 +4,7 @@ ARG INSTALLER_FILENAME
 
 # https://youtrack.jetbrains.com/articles/JBR-A-2/JetBrains-Runtime-on-musl-based-Systems
 RUN apk update && apk add --no-cache \
+    # gcompat is needed to launch `/opt/intellij-idea/bin/idea` executable \
     gcompat \
     libstdc++ \
     wget \
